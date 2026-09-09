@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en-us">
   <head>
+<script>window.Module = window.Module || {}; Module.onRuntimeInitialized = function() { window.FS = Module.FS; };</script>
 <script>
   var Module = {
     INITIAL_MEMORY: 268435456, // 256MB
@@ -116,6 +117,7 @@
     </footer>
   <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js");}</script></body>
 </html>
+
 
 
 
