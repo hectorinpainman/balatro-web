@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en-us">
-  <head><script src="patch.js"></script>
+  <head>
+<script>
+  var Module = {
+    INITIAL_MEMORY: 268435456, // 256MB
+    ALLOW_MEMORY_GROWTH: true
+  };
+</script>
+<script src="patch.js"></script>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
@@ -109,3 +116,4 @@
     </footer>
   <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js");}</script></body>
 </html>
+
