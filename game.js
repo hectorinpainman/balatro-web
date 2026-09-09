@@ -56,3 +56,28 @@ Module.expectedDataFileDownloads++;
 
 
 
+
+// --- OVERRIDE EMBEDDED PACKAGE LOADER ---
+window.fetchRemotePackage = function(packageName, packageSize, callback, errback) {
+  console.log('Stitching split game.data assets in memory...');
+  Promise.all([
+    fetch('game.data.part1').then(r => {
+      if (!r.ok) throw new Error('Failed to fetch part1: ' + r.statusText);
+      return r.arrayBuffer();
+    }),
+    fetch('game.data.part2').then(r => {
+      if (!r.ok) throw new Error('Failed to fetch part2: ' + r.statusText);
+      return r.arrayBuffer();
+    })
+  ]).then(([p1, p2]) => {
+    const combined = new Uint8Array(p1.byteLength + p2.byteLength);
+    combined.set(new Uint8Array(p1), 0);
+    combined.set(new Uint8Array(p2), p1.byteLength);
+    console.log('game.data successfully stitched:', combined.byteLength, 'bytes');
+    callback(combined.buffer);
+  }).catch(err => {
+    console.error('Failed to load split assets:', err);
+    if (errback) errback(err);
+  });
+};
+
