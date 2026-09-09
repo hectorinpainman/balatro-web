@@ -34,17 +34,25 @@ Module.expectedDataFileDownloads++;
     var PACKAGE_UUID = metadata.package_uuid;
 
     function fetchRemotePackage(packageName, packageSize, callback, errback) {
-  console.log('Stitching split game.data assets...');
+  console.log('Fetching split game.data parts...');
   Promise.all([
-    fetch('game.data.part1').then(r => r.arrayBuffer()),
-    fetch('game.data.part2').then(r => r.arrayBuffer())
-  ]).then(([p1, p2]) => {
-    const combined = new Uint8Array(p1.byteLength + p2.byteLength);
-    combined.set(new Uint8Array(p1), 0);
-    combined.set(new Uint8Array(p2), p1.byteLength);
-    console.log('game.data successfully stitched in memory:', combined.byteLength, 'bytes');
+    fetch('game.data.part1').then(function(r) {
+      if (!r.ok) throw new Error('Part 1 HTTP ' + r.status);
+      return r.arrayBuffer();
+    }),
+    fetch('game.data.part2').then(function(r) {
+      if (!r.ok) throw new Error('Part 2 HTTP ' + r.status);
+      return r.arrayBuffer();
+    })
+  ]).then(function(buffers) {
+    var p1 = new Uint8Array(buffers[0]);
+    var p2 = new Uint8Array(buffers[1]);
+    var combined = new Uint8Array(p1.byteLength + p2.byteLength);
+    combined.set(p1, 0);
+    combined.set(p2, p1.byteLength);
+    console.log('game.data stitched successfully! Total bytes:', combined.byteLength);
     callback(combined.buffer);
-  }).catch(err => {
+  }).catch(function(err) {
     console.error('Failed to load split assets:', err);
     if (errback) errback(err);
   });
@@ -80,5 +88,6 @@ window.fetchRemotePackage = function(packageName, packageSize, callback, errback
     if (errback) errback(err);
   });
 };
+
 
 
